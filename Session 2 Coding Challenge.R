@@ -26,17 +26,9 @@ munsell::plot_hex(myColors)
 
 # ggplot2 coding challenge ----
 
-# Exercise 1:
+# Exercises:
 # 1 - Need to deal with overplotting - 3 different ways to implement the solution
 # 2 - Change shape
-# 3 - Add linear models, without background
-# 4 - Change the colors - use Dark2 from color brewer
-# 5 - Re-position the legend
-# 6 - Remove non-data ink
-# 7 - Relabel the axes
-# 8 - Change the aspect ratio
-# 9 - Set limits on the x and y axes
-# 10 - Extra, remove color and use facets instead
 
 # load package
 library(ggplot2)
@@ -89,5 +81,62 @@ ggplot(Vocab, aes(x = education, y = vocabulary)) +
 # AESTHETIC - MAPPING a variable onto a SCALE
 # ATTRIBUTE - SETTING how a geommetry looks
 
+# Additional exercises ----
+# 3 - Add linear models, without background
+# 4 - Re-position the legend to the upper left corner
+# 5 - Change the colors - use Dark2 from color brewer
+# 6 - Remove non-data ink
+# 7 - Relabel the axes, add a title or caption
+# 8 - Change the aspect ratio
+# 9 - Set limits on the x and y axes
+# 10 - Extra, remove color and use facets instead
+g +
+  geom_point(position = posn_j, alpha = 0.65, shape = 1) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_brewer(palette =  "Dark2") +
+  labs(x = "Length (cm)", y = "Width (cm)", color = "Species",
+       title = "The iris dataset", caption = "Anderson, 1931") +
+  coord_fixed(1, expand = 0, xlim = c(4, 8), ylim = c(2,4)) +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = c(0.1, 0.85))
+
+# legend position is in units of npc
+
+# Specifying which group gets which color:
+myColors_named <- c(virginica = "#377EB8", 
+                    setosa = "#4DAF4A", 
+                    versicolor = "#984EA3")
+
+g +
+  geom_point(position = posn_j, alpha = 0.65, shape = 1) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(values = myColors_named)
+
+# Manually set breaks:
+# scale_x_continuous("Length (cm)", 
+#                    limits = c(4, 8), 
+#                    breaks = seq(4, 8, 0.5),
+#                    expand = c(0,0)) +
+  
+# Automatically labelling points on a plot
+library(MASS)
+# USe this data:
+mammals
+# NAmes must be a variable in the data frame
+mammals$name <- row.names(mammals)
+
+# It's best if the points to be labelled are already identified in the data:
+mammals$interesting <- mammals$brain > 2000
+
+ggplot(mammals, aes(body, brain, label = name)) +
+  geom_point(alpha = 0.5, shape = 16) +
+  geom_text(data = mammals[mammals$interesting,])
+
+# ggrepel to reposition the labels
+library(ggrepel)
+ggplot(mammals, aes(body, brain, label = name)) +
+  geom_point(alpha = 0.5, shape = 16) +
+  geom_text_repel(data = mammals[mammals$interesting,])
 
 
